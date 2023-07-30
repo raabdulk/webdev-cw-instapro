@@ -2,7 +2,7 @@
 // "боевая" версия инстапро лежит в ключе prod
 
 const personalKey = "rashid-abdulkhamidov";  // Персональный ключ разработчика
-const baseHost = `https://wedev-api.sky.pro/`; // Получить посты всех пользователей 
+const baseHost = `https://wedev-api.sky.pro`; // Получить посты всех пользователей 
 const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`; // https://wedev-api.sky.pro/api/v1/rashid-abdulkhamidov/instapro/api/v1/rashid-abdulkhamidov/instapro
 
 export function getPosts({ token }) { // Получаем все посты пользователей

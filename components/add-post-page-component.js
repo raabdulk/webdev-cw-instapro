@@ -1,4 +1,4 @@
-export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
+export function renderAddPostPageComponent({ appEl, onAddPostClick }) { // добавляет новый пост
   const render = () => {
     // TODO: Реализовать страницу добавления поста
     const appHtml = `

@@ -16,19 +16,19 @@ import {
   saveUserToLocalStorage,
 } from "./helpers.js";
 
-export let user = getUserFromLocalStorage(); 
-export let page = null;
-export let posts = []; // Массив с комментами
+export let user = getUserFromLocalStorage(); // Получаем объект из функции и кладем объект в константу user 
+export let page = null; // Создаем константу page и сразу же присваеваем ей значение null
+export let posts = []; // Массив с комментами, сюда мы добавляем комменты, отсюда мы их считываем
 
-const getToken = () => {
-  const token = user ? `Bearer ${user.token}` : undefined;
-  return token;
+const getToken = () => { // эта функция присваивает значение константе token
+  const token = user ? `Bearer ${user.token}` : undefined; // если константа user содержит объект, то получаем из обекта токен с помощью user.token
+  return token; // исходя из тернарного оператора выше возвращает значение константы либо Bearer ${user.token} либо undefined
 };
 
-export const logout = () => {
-  user = null;
-  removeUserFromLocalStorage();
-  goToPage(POSTS_PAGE);
+export const logout = () => { // Функция выхода из приложения авторизованного пользователя
+  user = null; // зануляем константу user 
+  removeUserFromLocalStorage(); // Удаляем данные из localStorage
+  goToPage(POSTS_PAGE); // отправляемся с помощью функции goToPage на страницу POSTS_PAGE
 };
 
 /**
@@ -85,7 +85,7 @@ export const goToPage = (newPage, data) => {
 
 const renderApp = () => {
   const appEl = document.getElementById("app");
-  if (page === LOADING_PAGE) {
+  if (page === LOADING_PAGE) { // если страница загрузк то
     return renderLoadingPageComponent({
       appEl,
       user,
@@ -93,7 +93,7 @@ const renderApp = () => {
     });
   }
 
-  if (page === AUTH_PAGE) {
+  if (page === AUTH_PAGE) { // если страница авторизации то
     return renderAuthPageComponent({
       appEl,
       setUser: (newUser) => {
@@ -106,7 +106,7 @@ const renderApp = () => {
     });
   }
 
-  if (page === ADD_POSTS_PAGE) {
+  if (page === ADD_POSTS_PAGE) { // если страница добавления поста то
     return renderAddPostPageComponent({
       appEl,
       onAddPostClick({ description, imageUrl }) {
@@ -117,13 +117,13 @@ const renderApp = () => {
     });
   }
 
-  if (page === POSTS_PAGE) {
+  if (page === POSTS_PAGE) { // если страница всех постов то
     return renderPostsPageComponent({
       appEl,
     });
   }
 
-  if (page === USER_POSTS_PAGE) {
+  if (page === USER_POSTS_PAGE) { // если страница постов пользователя то
     // TODO: реализовать страницу фотографию пользвателя
     appEl.innerHTML = "Здесь будет страница фотографий пользователя";
     return;
