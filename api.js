@@ -1,13 +1,9 @@
-// Замени на свой, чтобы получить независимый от других набор данных. +
+// Замени на свой, чтобы получить независимый от других набор данных
 // "боевая" версия инстапро лежит в ключе prod
-//
 
 const personalKey = "rashid-abdulkhamidov";  // Персональный ключ разработчика
-const baseHost = `https://wedev-api.sky.pro/api/v1/${personalKey}/instapro`; // Посты пользователя 
-// https://wedev-api.sky.pro/api/v1/rashid-abdulkhamidov/instapro
-const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`; 
-// https://wedev-api.sky.pro/api/v1/rashid-abdulkhamidov/instapro/api/v1/rashid-abdulkhamidov/instapro
-
+const baseHost = `https://wedev-api.sky.pro/`; // Получить посты всех пользователей 
+const postsHost = `${baseHost}/api/v1/${personalKey}/instapro`; // https://wedev-api.sky.pro/api/v1/rashid-abdulkhamidov/instapro/api/v1/rashid-abdulkhamidov/instapro
 
 export function getPosts({ token }) { // Получаем все посты пользователей
   return fetch(postsHost, {
@@ -30,7 +26,7 @@ export function getPosts({ token }) { // Получаем все посты по
 
 // https://github.com/GlebkaF/webdev-hw-api/blob/main/pages/api/user/README.md#%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%D1%81%D1%8F
 export function registerUser({ login, password, name, imageUrl }) { // Регистрация пользователя
-  return fetch(baseHost + "/api/user", {
+  return fetch(baseHost + "/api/user", { // https://wedev-api.sky.pro/api/v1/rashid-abdulkhamidov/instapro/api/user
     method: "POST",
     body: JSON.stringify({
       login,
@@ -47,7 +43,7 @@ export function registerUser({ login, password, name, imageUrl }) { // Реги�
 }
 
 export function loginUser({ login, password }) { // Авторизация пользователя
-  return fetch(baseHost + "/api/user/login", {
+  return fetch(baseHost + "/api/user/login", { // https://wedev-api.sky.pro/api/v1/rashid-abdulkhamidov/instapro/api/user/login
     method: "POST",
     body: JSON.stringify({
       login,
