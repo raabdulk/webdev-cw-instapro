@@ -16,8 +16,8 @@ import {
   saveUserToLocalStorage,
 } from "./helpers.js";
 
-export let user = getUserFromLocalStorage(); // Получаем объект из функции и кладем объект в константу user 
-export let page = null; // Создаем константу page и сразу же присваеваем ей значение null
+export let user = getUserFromLocalStorage(); // Получаем объект из функции и кладем объект в переменную user 
+export let page = null; // Создаем переменную page и сразу же присваеваем ей значение null
 export let posts = []; // Массив с комментами, сюда мы добавляем комменты, отсюда мы их считываем
 
 const getToken = () => { // эта функция присваивает значение константе token
@@ -31,10 +31,8 @@ export const logout = () => { // Функция выхода из приложе
   goToPage(POSTS_PAGE); // отправляемся с помощью функции goToPage на страницу POSTS_PAGE
 };
 
-/**
- * Включает страницу приложения
- */
-export const goToPage = (newPage, data) => {
+// Включает страницу приложения
+export const goToPage = (newPage, data) => { // с этой функции начинает работать наше приложение
   if (
     [
       POSTS_PAGE,
@@ -83,10 +81,10 @@ export const goToPage = (newPage, data) => {
   throw new Error("страницы не существует");
 };
 
-const renderApp = () => {
+const renderApp = () => { // В зависимости от значения переменной page возвращает соответствующую отрисовку
   const appEl = document.getElementById("app");
-  if (page === LOADING_PAGE) { // если страница загрузк то
-    return renderLoadingPageComponent({
+  if (page === LOADING_PAGE) { // если страница загрузки то -->
+    return renderLoadingPageComponent({ // запускаем функцию лоадера
       appEl,
       user,
       goToPage,
