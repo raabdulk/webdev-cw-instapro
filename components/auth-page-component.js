@@ -50,7 +50,7 @@ export function renderAuthPageComponent({ appEl, setUser }) { // Функция 
 
     if (uploadImageContainer) {
       renderUploadImageComponent({
-        element: appEl.querySelector(".upload-image-container"), // передаем элмент в эту функцию, а функция отрендерит в этот элемент???
+        element: appEl.querySelector(".upload-image-container"), // передаем элмент в эту функцию, а функция отрендерит в этот элемент
         onImageUrlChange(newImageUrl) { // функция со ссылкой на загруженную картинку
           imageUrl = newImageUrl; // в локальную переменную записываем полученную ссылку
         },
@@ -103,7 +103,7 @@ export function renderAuthPageComponent({ appEl, setUser }) { // Функция 
           return;
         }
 
-        if (!imageUrl) {
+        if (!imageUrl) { // проверка выбрано ли фото, при выбранном фото imageUrl будет иметь ссылку
           alert("Не выбрана фотография");
           return;
         }

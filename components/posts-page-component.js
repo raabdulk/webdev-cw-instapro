@@ -5,7 +5,6 @@ import { posts, goToPage } from "../index.js";
 export function renderPostsPageComponent({ appEl }) {
   // TODO: реализовать рендер постов из api
   const appHtml = posts.map((post) => {
-    console.log(post)
     return `
               <div class="page-container">
                 <div class="header-container"></div>
@@ -92,6 +91,7 @@ export function renderPostsPageComponent({ appEl }) {
               </div>`;
   })
 
+  console.log(appHtml)
   console.log("Актуальный список постов:", posts);
 
   /**
