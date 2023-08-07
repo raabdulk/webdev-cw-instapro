@@ -50,14 +50,14 @@ export function renderAuthPageComponent({ appEl, setUser }) { // Функция 
 
     if (uploadImageContainer) {
       renderUploadImageComponent({
-        element: appEl.querySelector(".upload-image-container"), // передаем элмент в эту функцию, а функция отрендерит в этот элемент
+        element: appEl.querySelector(".upload-image-container"), // передаем элемент в эту функцию, а функция отрендерит в этот элемент
         onImageUrlChange(newImageUrl) { // функция со ссылкой на загруженную картинку
           imageUrl = newImageUrl; // в локальную переменную записываем полученную ссылку
         },
       });
     }
 
-    document.getElementById("login-button").addEventListener("click", () => {
+    document.getElementById("login-button").addEventListener("click", () => { // вешаем обработчик на кнопку Войти
       setError("");
 
       if (isLoginMode) {

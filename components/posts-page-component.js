@@ -1,51 +1,62 @@
 import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
-import { posts, goToPage } from "../index.js";
+import { posts, goToPage, getToken } from "../index.js";
+import { addLikes, delLikes } from "../api.js";
 
-export function renderPostsPageComponent({ appEl }) { // функция перебирает массив posts, строит разметку на основе полученных данных -->
+export function renderPostsPageComponent({ appEl }) {
+  // функция перебирает массив posts, строит разметку на основе полученных данных -->
   // и полученную разметку кладем в appEl
   // TODO: реализовать рендер постов из api
   if (posts.length === 0) {
-
-    console.log("Пусто!")
-    
+    console.log("Пусто!");
   } else {
     const appHtml = posts.map((post) => {
       return `
-                <div class="page-container">
-                  <div class="header-container"></div>
-                  <ul class="posts">
-  
                     <li class="post">
                       <div class="post-header" data-user-id=${post.user.id}>
-                          <img src=${post.user.imageUrl} class="post-header__user-image">
-                          <p class="post-header__user-name">${post.user.name}</p>
+                          <img src=${
+                            post.user.imageUrl
+                          } class="post-header__user-image">
+                          <p class="post-header__user-name">${
+                            post.user.name
+                          }</p>
                       </div>
                       <div class="post-image-container">
                         <img class="post-image" src=${post.imageUrl}>
                       </div>
                       <div class="post-likes">
-                        <button data-post-id=${post.id} class="like-button">
-                          <img src="./assets/images/like-active.svg">
+                        <button data-post-id="${post.id}" class="like-button">
+                          ${
+                            post.isLiked
+                              ? `<img src="./assets/images/like-active.svg"></img>`
+                              : `<img src="./assets/images/like-not-active.svg"></img>`
+                          }                 
                         </button>
                         <p class="post-likes-text">
-                          Нравится: <strong>${post.likes}</strong>
+                          Нравится: <strong>${post.user.name}</strong>
                         </p>
                       </div>
                       <p class="post-text">
-                        <span class="user-name">Иван Иваныч</span>
-                        Ромашка, ромашка...
+                        <span class="user-name">${post.user.name}</span>
+                        ${post.description}
                       </p>
                       <p class="post-date">
                         19 минут назад
                       </p>
-                    </li>
-  
-                  </ul>
-                </div>`;
-    })
+                    </li>`;
+    });
 
-    console.log("Содержимое appHtml:", appHtml);
+    const containerHtml = `
+    <div class="page-container">
+      <div class="header-container"></div>
+        <ul class="posts">
+          <!-- Список рендерится из JS -->
+          ${appHtml}
+        </ul>
+    </div>
+    `;
+
+    // console.log("Содержимое appHtml:", appHtml);
     console.log("Актуальный список постов:", posts);
 
     /**
@@ -53,20 +64,42 @@ export function renderPostsPageComponent({ appEl }) { // функция пере
      * можно использовать https://date-fns.org/v2.29.3/docs/formatDistanceToNow
      */
 
-    // appEl.innerHTML = appHtml;
+    appEl.innerHTML = containerHtml;
+    initLikeButton();
 
     renderHeaderComponent({
       element: document.querySelector(".header-container"),
     });
 
-    for (let userEl of document.querySelectorAll(".post-header")) { // для содержимого объекта с классом post-header
-      userEl.addEventListener("click", () => { // навешиваем событие по клику
-        goToPage(USER_POSTS_PAGE, { // которое отправляет на страницу с постами пользователя
+    for (let userEl of document.querySelectorAll(".post-header")) {
+      // для содержимого объекта с классом post-header
+      userEl.addEventListener("click", () => {
+        // навешиваем событие по клику
+        goToPage(USER_POSTS_PAGE, {
+          // которое отправляет на страницу с постами пользователя
           userId: userEl.dataset.userId, // data-user-id которого содержит userId элемента по которому мы кликнули
         });
       });
     }
   }
-
 }
 
+// Закрашиваем кнопку лайка
+const initLikeButton = () => {
+  const likeButtons = document.querySelectorAll(".like-button"); // выбрали все элементы с классом like-button
+
+  for (const likeButton of likeButtons) {
+    likeButton.addEventListener("click", () => {
+      const likeButtonIndex = likeButton.dataset.index;
+      console.log(likeButtonIndex);
+      const post = posts[likeButtonIndex];
+
+      if (post.isLiked) {
+        addLikes({ likeButtonIndex });
+      } else {
+        delLikes({ likeButtonIndex });
+      }
+      renderPostsPageComponent();
+    });
+  }
+};
