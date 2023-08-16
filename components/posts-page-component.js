@@ -86,19 +86,28 @@ export function renderPostsPageComponent({ appEl }) {
 
 // Закрашиваем кнопку лайка
 const initLikeButton = () => {
-  const likeButtons = document.querySelectorAll(".like-button"); // выбрали все элементы с классом like-button
+  const likeButtons = document.querySelectorAll(".like-button"); // выбрали все элементы с классом like-button, на него вешаем обработчики клика
 
   for (const likeButton of likeButtons) {
     likeButton.addEventListener("click", () => {
-      const likeButtonIndex = likeButton.dataset.index;
-      console.log(likeButtonIndex);
-      const post = posts[likeButtonIndex];
+      const likeButtonIndex = likeButton.dataset.postId;
+      let indexOfEl;
+      let isLikedEl;
+      const apple = posts.find((item, index) => {
+        if (item.id === likeButtonIndex) {
+          indexOfEl = index;
+          isLikedEl = item.isLiked;
+          return item;
+        }
+      });
+      console.log(indexOfEl);
+      console.log(isLikedEl);
 
-      if (post.isLiked) {
-        addLikes({ likeButtonIndex });
-      } else {
-        delLikes({ likeButtonIndex });
-      }
+      // if (likeButtonIndex.isLiked) {
+      //   addLikes({ likeButtonIndex });
+      // } else {
+      //   delLikes({ likeButtonIndex });
+      // }
       renderPostsPageComponent();
     });
   }
