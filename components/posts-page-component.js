@@ -1,9 +1,9 @@
-import { USER_POSTS_PAGE } from "../routes.js";
+import { USER_POSTS_PAGE, POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage, getToken } from "../index.js";
 import { addLikes, delLikes } from "../api.js";
 
-export function renderPostsPageComponent({ appEl }) {
+export function renderPostsPageComponent({ appEl, postId }) {
   // функция перебирает массив posts, строит разметку на основе полученных данных -->
   // и полученную разметку кладем в appEl
   // TODO: реализовать рендер постов из api
@@ -90,25 +90,24 @@ const initLikeButton = () => {
 
   for (const likeButton of likeButtons) {
     likeButton.addEventListener("click", () => {
-      const likeButtonIndex = likeButton.dataset.postId;
+      const postId = likeButton.dataset.postId;
       let indexOfEl;
       let isLikedEl;
       const apple = posts.find((item, index) => {
-        if (item.id === likeButtonIndex) {
+        if (item.id === postId) {
           indexOfEl = index;
           isLikedEl = item.isLiked;
           return item;
         }
       });
-      console.log(indexOfEl);
-      console.log(isLikedEl);
+      if (isLikedEl) {
+        delLikes({ postId });
+      } else {
+        addLikes({ postId });
+      }
 
-      // if (likeButtonIndex.isLiked) {
-      //   addLikes({ likeButtonIndex });
-      // } else {
-      //   delLikes({ likeButtonIndex });
-      // }
-      renderPostsPageComponent();
+      let appEl = document.querySelector("#app");
+      renderPostsPageComponent({ appEl, postId });
     });
   }
 };
