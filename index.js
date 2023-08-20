@@ -1,4 +1,4 @@
-import { getPosts } from "./api.js";
+import { addPost, getPosts, getPostsUser } from "./api.js";
 import { renderAddPostPageComponent } from "./components/add-post-page-component.js";
 import { renderAuthPageComponent } from "./components/auth-page-component.js";
 import {
@@ -16,25 +16,26 @@ import {
   saveUserToLocalStorage,
 } from "./helpers.js";
 
-export let user = getUserFromLocalStorage();
-export let page = null;
-export let posts = [];
+export let user = getUserFromLocalStorage(); // Получаем объект из функции и кладем объект в переменную user
+export let page = null; // Создаем переменную page и сразу же присваеваем ей значение null
+export let posts = []; // Массив с постами, сюда мы добавляем посты, отсюда мы их считываем
 
-const getToken = () => {
-  const token = user ? `Bearer ${user.token}` : undefined;
-  return token;
+export const getToken = () => {
+  // эта функция присваивает значение константе token
+  const token = user ? `Bearer ${user.token}` : undefined; // если переменная user содержит объект, то получаем из объекта токен с помощью user.token
+  return token; // исходя из тернарного оператора выше возвращает значение константы либо Bearer ${user.token} либо undefined
 };
 
 export const logout = () => {
-  user = null;
-  removeUserFromLocalStorage();
-  goToPage(POSTS_PAGE);
+  // Функция выхода из приложения авторизованного пользователя
+  user = null; // зануляем константу user
+  removeUserFromLocalStorage(); // Удаляем данные из localStorage
+  goToPage(POSTS_PAGE); // отправляемся с помощью функции goToPage на страницу POSTS_PAGE
 };
 
-/**
- * Включает страницу приложения
- */
+// Включает страницу приложения
 export const goToPage = (newPage, data) => {
+  // с этой функции начинает работать наше приложение
   if (
     [
       POSTS_PAGE,
@@ -45,33 +46,48 @@ export const goToPage = (newPage, data) => {
     ].includes(newPage)
   ) {
     if (newPage === ADD_POSTS_PAGE) {
-      // Если пользователь не авторизован, то отправляем его на авторизацию перед добавлением поста
-      page = user ? ADD_POSTS_PAGE : AUTH_PAGE;
+      page = user ? ADD_POSTS_PAGE : AUTH_PAGE; // Если пользователь не авторизован, то отправляем его на авторизацию перед добавлением поста
       return renderApp();
     }
 
     if (newPage === POSTS_PAGE) {
-      page = LOADING_PAGE;
-      renderApp();
+      // если страница POSTS_PAGE то -->
+      page = LOADING_PAGE; // переменная page получает значение LOADING_PAGE для запуска отображения Лоадера
+      renderApp(); // функция отрисует лоадер который прописан в функции renderLoadingPageComponent
 
-      return getPosts({ token: getToken() })
+      return (
+        getPosts({ token: getToken() }) // далее получаем посты всех пользователей, параметром в функцию с fetch запросом передаем -->
+          // ключ token со свойством которое вернет функция getToken
+          .then((newPosts) => {
+            // дожидаемся выполнения getPosts и принимаем в newPosts то что нам передаст функция с fetch запросом
+            page = POSTS_PAGE; // переменная page получает значение POSTS_PAGE для отрисовки страницы с помощью renderApp
+            posts = newPosts; // в переменную с постами кладем то что пришло из функции getPosts, а приходит к нам массив с объектами
+            renderApp(); // происходит отрисовка страницы в зависимости от значения переменной page
+          })
+          .catch((error) => {
+            console.error(error);
+            goToPage(POSTS_PAGE);
+          })
+      );
+    }
+
+    if (newPage === USER_POSTS_PAGE) {
+      // если страница постов пользователя то -->
+      page = LOADING_PAGE; // переменная page получает значение LOADING_PAGE для запуска отображения Лоадера
+      renderApp(); // функция отрисует лоадер который прописан в функции renderLoadingPageComponent
+      let dataUserId = data.userId;
+
+      return getPostsUser({ token: getToken(), dataUserId })
         .then((newPosts) => {
-          page = POSTS_PAGE;
+          page = USER_POSTS_PAGE;
           posts = newPosts;
           renderApp();
+          console.log("Открываю страницу пользователя: ", dataUserId);
         })
         .catch((error) => {
           console.error(error);
           goToPage(POSTS_PAGE);
         });
-    }
-
-    if (newPage === USER_POSTS_PAGE) {
-      // TODO: реализовать получение постов юзера из API
-      console.log("Открываю страницу пользователя: ", data.userId);
-      page = USER_POSTS_PAGE;
-      posts = [];
-      return renderApp();
     }
 
     page = newPage;
@@ -84,33 +100,50 @@ export const goToPage = (newPage, data) => {
 };
 
 const renderApp = () => {
-  const appEl = document.getElementById("app");
+  // В зависимости от значения переменной page возвращает соответствующую отрисовку
+  const appEl = document.getElementById("app"); // константа с элементом app в который рендерится приложение
+
   if (page === LOADING_PAGE) {
+    // если страница загрузки то -->
     return renderLoadingPageComponent({
-      appEl,
-      user,
-      goToPage,
+      // запускаем функцию лоадера и передаем в нее след. параметры
+      appEl, // даем доступ к элементу с id = "app" в который рендерится приложение
+      user, // даем доступ к переменной user, на данный момент ее значение null
+      goToPage, // передаем то что сейчас присвоено константе (функции)
     });
   }
 
   if (page === AUTH_PAGE) {
+    // если страница авторизации то
     return renderAuthPageComponent({
-      appEl,
+      // в функцию рендера страницы авторизации передаем следующие данные
+      appEl, // appEl для отрисовки результата в div с классом app на index странице
       setUser: (newUser) => {
-        user = newUser;
-        saveUserToLocalStorage(user);
-        goToPage(POSTS_PAGE);
+        // setUser, это свойства объекта аргумента, к которому мы присваиваем функцию
+        // она будет выполняться когда внутри renderAuthPageComponent будет вызваться setUser('имя')
+        // setUser Это тоже callback, ты ее передаешь на 100-ой строке, и там же ее сразу описываешь, просто не записывая ее в переменную как goToPage
+        user = newUser; // переменной user присваиваем значение параметра newUser
+        saveUserToLocalStorage(user); // кладем значение user в localStorage, user в формате JSON
+        goToPage(POSTS_PAGE); // отправляемся на страницу с постами
       },
-      user,
-      goToPage,
+      user, // для чего здесь user и какой функционал у setUser ???
+      goToPage, // это функция переданная в качестве свойства объекта аргумента, это callback
     });
   }
 
   if (page === ADD_POSTS_PAGE) {
+    // если страница добавления поста то
     return renderAddPostPageComponent({
-      appEl,
+      // в функцию рендера добавления поста передаем след данные
+      appEl, // appEl для отрисовки результата в div с классом app на index странице
       onAddPostClick({ description, imageUrl }) {
         // TODO: реализовать добавление поста в API
+        if (!imageUrl) {
+          // проверка выбрано ли фото, при выбранном фото imageUrl будет иметь ссылку
+          alert("Не выбрана фотография");
+          return;
+        }
+        addPost({ token: getToken(), description, imageUrl }); // запускаем и передаем в функцию addPost: token, description, imageUrl
         console.log("Добавляю пост...", { description, imageUrl });
         goToPage(POSTS_PAGE);
       },
@@ -118,15 +151,17 @@ const renderApp = () => {
   }
 
   if (page === POSTS_PAGE) {
+    // если страница всех постов то
     return renderPostsPageComponent({
       appEl,
     });
   }
 
   if (page === USER_POSTS_PAGE) {
-    // TODO: реализовать страницу фотографию пользвателя
-    appEl.innerHTML = "Здесь будет страница фотографий пользователя";
-    return;
+    // если страница постов пользователя то
+    return renderPostsPageComponent({
+      appEl,
+    });
   }
 };
 
